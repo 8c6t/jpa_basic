@@ -20,9 +20,17 @@ public class JpaMain {
             // afterSelect(em);
             // writeBehind(em);
             // dirtyChecking(em);
+            // flush(em);
 
-            flush(em);
+            Member member = em.find(Member.class, 150L);
+            member.setName("AAAAA");
 
+            // em.detach(member);
+            em.clear();
+
+            Member member2 = em.find(Member.class, 150L);
+
+            System.out.println("==========");
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
