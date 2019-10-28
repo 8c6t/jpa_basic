@@ -19,8 +19,9 @@ public class JpaMain {
             // primaryCache(em);
             // afterSelect(em);
             // writeBehind(em);
+            // dirtyChecking(em);
 
-            dirtyChecking(em);
+            flush(em);
 
             tx.commit();
         } catch (Exception e) {
@@ -30,6 +31,14 @@ public class JpaMain {
         }
 
         emf.close();
+    }
+
+    private static void flush(EntityManager em) {
+        Member member = new Member(200L, "member200");
+        em.persist(member);
+
+        em.flush();
+        System.out.println("==================");
     }
 
     // 1차 캐시
