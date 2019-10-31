@@ -16,6 +16,16 @@ public class JpaMain {
         tx.begin();
 
         try {
+            Member member = saveMember(em);
+
+            Team team = new Team();
+            team.setName("teamA");
+
+            // team 엔티티인데 member 테이블 업데이트가 발생
+            team.getMembers().add(member);
+
+            em.persist(team);
+
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
@@ -24,5 +34,12 @@ public class JpaMain {
         }
 
         emf.close();
+    }
+
+    private static Member saveMember(EntityManager em) {
+        Member member = new Member();
+        member.setUsername("member1");
+        em.persist(member);
+        return member;
     }
 }
