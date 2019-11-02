@@ -17,15 +17,13 @@ public class JpaMain {
 
         try {
             Member member = saveMember(em);
+            member.setUsername("memberA");
+            em.persist(member);
 
-            Team team = new Team();
-            team.setName("teamA");
+            Locker locker = new Locker();
+            em.persist(locker);
 
-            // team 엔티티인데 member 테이블 업데이트가 발생
-            team.getMembers().add(member);
-
-            em.persist(team);
-
+            member.setLocker(locker);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
