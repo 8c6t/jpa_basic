@@ -16,14 +16,6 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Member member = saveMember(em);
-            member.setUsername("memberA");
-            em.persist(member);
-
-            Locker locker = new Locker();
-            em.persist(locker);
-
-            member.setLocker(locker);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
@@ -34,10 +26,4 @@ public class JpaMain {
         emf.close();
     }
 
-    private static Member saveMember(EntityManager em) {
-        Member member = new Member();
-        member.setUsername("member1");
-        em.persist(member);
-        return member;
-    }
 }
