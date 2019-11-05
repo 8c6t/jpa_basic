@@ -16,12 +16,25 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Member member = new Member();
-            member.setUsername("hello");
-            member.setHomeAddress(new Address("city", "street", "10000"));
-            member.setWorkPeriod(new Period());
+            Address address = new Address("city", "street", "10000");
 
-            em.persist(member);
+            Member member1 = new Member();
+            member1.setUsername("member1");
+            member1.setHomeAddress(address);
+            em.persist(member1);
+
+            // 불변 객체. 객체를 새로 생성해서 set
+            Address newAddress = new Address("newCity", address.getStreet(), address.getZipcode());
+            member1.setHomeAddress(newAddress);
+
+            Address copyAddress = new Address(address.getCity(), address.getStreet(), address.getZipcode());
+
+            Member member2 = new Member();
+            member2.setUsername("member2");
+            member2.setHomeAddress(copyAddress);
+            em.persist(member2);
+
+            // member1.getHomeAddress().setCity("newCity");
 
             tx.commit();
         } catch (Exception e) {
