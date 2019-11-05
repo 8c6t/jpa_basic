@@ -12,7 +12,7 @@ public class Team extends BaseEntity {
     private Long id;
     private String name;
 
-    @OneToMany(mappedBy = "team")
+    @OneToMany
     private List<Member> members = new ArrayList<>();
 
     public Long getId() {
