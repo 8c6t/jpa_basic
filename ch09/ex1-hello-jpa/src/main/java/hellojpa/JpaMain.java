@@ -57,7 +57,7 @@ public class JpaMain {
 
         // 치킨 -> 한식
         findMember.getFavoriteFoods().remove("치킨");
-        findMember.getFavoriteFoods().add("한식");
+        findMember.getFavoriteFoods().add("한식");1
 
         findMember.getAddressHistory().remove(new AddressEntity("old1", "street", "10000")); // equals 기반
         findMember.getAddressHistory().add(new AddressEntity("newCity1", "street", "10000"));
