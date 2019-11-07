@@ -31,20 +31,15 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-            String inner = "SELECT m FROM Member m JOIN m.team t";
-            String outer = "SELECT m FROM Member m LEFT OUTER JOIN m.team t";
-            String theta = "SELECT m from Member m, Team t WHERE m.username = t.name";
+            String query = "SELECT (SELECT AVG(m1.age) FROM Member m1) AS avgAge FROM Member m JOIN Team t ON m.username = t.name";
 
-            // on
-            String joinOn = "SELECT m FROM Member m JOIN m.team t ON t.name = 'teamA'";
-            String outerOn = "SELECT m FROM Member m LEFT JOIN Team t ON m.username = t.name";
+            String inlineView = "SELECT mm.age, mm.username " +
+                                    "FROM (SELECT m.age, m.username FROM Member m) as mm";
 
-            List<Member> result = em.createQuery(outerOn, Member.class)
+            List<Member> result = em.createQuery(query, Member.class)
                     .getResultList();
 
             System.out.println("result = " + result.size());
-
-
 
             tx.commit();
         } catch (Exception e) {
