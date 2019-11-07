@@ -23,6 +23,7 @@ public class JpaMain {
             Member member = new Member();
             member.setUsername("teamA");
             member.setAge(10);
+            member.setType(MemberType.ADMIN);
 
             member.setTeam(team);
 
@@ -31,15 +32,22 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-            String query = "SELECT (SELECT AVG(m1.age) FROM Member m1) AS avgAge FROM Member m JOIN Team t ON m.username = t.name";
+            String queryEnum = "SELECT m.username, 'HELLO', true FROM Member m " +
+                                "WHERE m.type = :userType";
 
-            String inlineView = "SELECT mm.age, mm.username " +
-                                    "FROM (SELECT m.age, m.username FROM Member m) as mm";
+            String query = "SELECT m.username, 'HELLO', true FROM Member m " +
+                            // "WHERE m.username IS NOT NULL";
+                            "WHERE m.age BETWEEN 0 AND 10";
 
-            List<Member> result = em.createQuery(query, Member.class)
+            List<Object[]> result = em.createQuery(queryEnum)
+                    .setParameter("userType", MemberType.ADMIN)
                     .getResultList();
 
-            System.out.println("result = " + result.size());
+            for (Object[] objects : result) {
+                System.out.println("objects = " + objects[0]);
+                System.out.println("objects = " + objects[1]);
+                System.out.println("objects = " + objects[2]);
+            }
 
             tx.commit();
         } catch (Exception e) {
