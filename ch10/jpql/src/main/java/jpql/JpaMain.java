@@ -1,6 +1,9 @@
 package jpql;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import java.util.List;
 
 public class JpaMain {
@@ -18,25 +21,39 @@ public class JpaMain {
             member.setAge(10);
             em.persist(member);
 
-            TypedQuery<Member> query1 = em.createQuery("SELECT m from Member m", Member.class);
-            TypedQuery<String> query2 = em.createQuery("SELECT m.username from Member m", String.class);
-            Query query3 = em.createQuery("SELECT m.username, m.age from Member m");
+            em.flush();
+            em.clear();
 
-            List<Member> resultList = query1.getResultList();
 
-            for (Member member1: resultList) {
-                System.out.println("member1: " + member);
-            }
+            List<Member> result = em.createQuery("SELECT m FROM Member m", Member.class)
+                    .getResultList();
 
-            // Spring Data JPA -> optional or null
-            Member result = query1.getSingleResult();
-            System.out.println("result: " + result);
+            Member findMember = result.get(0);
+            findMember.setAge(20);
 
-            // Parameter Binding
-            Member singleResult = em.createQuery("SELECT m FROM Member m WHERE m.username = :username", Member.class)
-                    .setParameter("username", "member1")
-                    .getSingleResult();
-            System.out.println("singleResult = " + singleResult.getUsername());
+            // JOIN
+            List<Team> join = em.createQuery("SELECT t FROM Member m JOIN m.team t", Team.class)
+                    .getResultList();
+
+            // Embedded Type
+            List<Address> embeddedType = em.createQuery("SELECT o.address FROM Order o", Address.class)
+                    .getResultList();
+
+            // Scala
+            List<Object[]> queryList = em.createQuery("SELECT DISTINCT m.username, m.age FROM Member m")
+                    .getResultList();
+
+            Object[] queryResult = queryList.get(0);
+            System.out.println("username = " + queryResult[0]);
+            System.out.println("age = " + queryResult[1]);
+
+            // new
+            List<MemberDTO> newList = em.createQuery("SELECT NEW jpql.MemberDTO(m.username, m.age) from Member m", MemberDTO.class)
+                    .getResultList();
+
+            MemberDTO memberDTO = newList.get(0);
+            System.out.println("memberDTO = " + memberDTO.getUsername());
+            System.out.println("memberDTO = " + memberDTO.getAge());
 
             tx.commit();
         } catch (Exception e) {
