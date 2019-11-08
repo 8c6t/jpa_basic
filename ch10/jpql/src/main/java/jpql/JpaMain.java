@@ -17,36 +17,61 @@ public class JpaMain {
 
         try {
 
+            Team teamA = new Team();
+            teamA.setName("팀A");
+            em.persist(teamA);
+
+            Team teamB = new Team();
+            teamB.setName("팀B");
+            em.persist(teamB);
+
             Member member1 = new Member();
-            member1.setUsername("관리자1");
+            member1.setUsername("회원1");
+            member1.setTeam(teamA);
             em.persist(member1);
 
             Member member2 = new Member();
-            member2.setUsername("관리자2");
+            member2.setUsername("회원2");
+            member2.setTeam(teamA);
             em.persist(member2);
+
+            Member member3 = new Member();
+            member3.setUsername("회원3");
+            member3.setTeam(teamB);
+            em.persist(member3);
 
             em.flush();
             em.clear();
 
-            // concat
-            String concatQuery = "SELECT CONCAT('a', 'b') FROM Member m";
-            // SUBSTRING
-            String substrQuery = "SELECT SUBSTRING(m.username, 2, 3) FROM Member m";
-            // LOCATE
-            String locateQuery = "SELECT LOCATE('de', 'abcdefg') FROM Member m";
-            // SIZE
-            String sizeQuery = "SELECT SIZE(t.members) FROM Team t";
-            // INDEX
-            String indexQuery = "SELECT INDEX(t.members) FROM Team t";
-            // CUSTOM FUNCTION
-            String funcQuery = "SELECT FUNCTION('group_concat', m.username) FROM Member m";
-            String hibernateFuncQuery = "SELECT group_concat(m.username) FROM Member m";
+ /*           String sql = "SELECT m FROM Member m";
 
-            List<String> result = em.createQuery(hibernateFuncQuery, String.class).getResultList();
-            // List<Integer> result = em.createQuery(indexQuery, Integer.class).getResultList();
+            List<Member> result = em.createQuery(sql, Member.class)
+                    .getResultList();
 
-            for (String s: result) {
-                System.out.println("s = " + s);
+            for (Member member: result) {
+                System.out.println("member =  = " + member.getUsername() + ", " + member.getTeam().getName());
+                // 회원1, 팀A(SQL)
+                // 회원2, 팀A(1차 캐시)
+                // 회원3, 팀B(SQL)
+
+                // 회원 100명 -> N + 1 쿼리 발생
+            }*/
+
+            String fetchJoinEntity = "SELECT m FROM Member m JOIN FETCH m.team";
+            String fetchJoinCollection = "SELECT DISTINCT t FROM Team t JOIN FETCH t.members";
+            String normalJoin = "SELECT t FROM Team t JOIN t.members m";
+
+            List<Team> result = em.createQuery(fetchJoinCollection, Team.class)
+                    .getResultList();
+
+            System.out.println("result = " + result.size());
+
+            for (Team team: result) {
+                //System.out.println("member =  = " + member.getUsername() + ", " + member.getTeam().getName());
+                System.out.println("team = " + team.getName() + ", members = " + team.getMembers().size());
+                for (Member member : team.getMembers()) {
+                    System.out.println("  -> member = " + member);
+                }
             }
 
             tx.commit();
