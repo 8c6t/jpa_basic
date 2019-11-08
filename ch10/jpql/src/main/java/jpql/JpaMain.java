@@ -43,31 +43,16 @@ public class JpaMain {
             em.flush();
             em.clear();
 
- /*           String sql = "SELECT m FROM Member m";
+            String query = "SELECT t FROM Team t";
 
-            List<Member> result = em.createQuery(sql, Member.class)
-                    .getResultList();
-
-            for (Member member: result) {
-                System.out.println("member =  = " + member.getUsername() + ", " + member.getTeam().getName());
-                // 회원1, 팀A(SQL)
-                // 회원2, 팀A(1차 캐시)
-                // 회원3, 팀B(SQL)
-
-                // 회원 100명 -> N + 1 쿼리 발생
-            }*/
-
-            String fetchJoinEntity = "SELECT m FROM Member m JOIN FETCH m.team";
-            String fetchJoinCollection = "SELECT DISTINCT t FROM Team t JOIN FETCH t.members";
-            String normalJoin = "SELECT t FROM Team t JOIN t.members m";
-
-            List<Team> result = em.createQuery(fetchJoinCollection, Team.class)
+            List<Team> result = em.createQuery(query, Team.class)
+                    .setFirstResult(0)
+                    .setMaxResults(2)
                     .getResultList();
 
             System.out.println("result = " + result.size());
 
             for (Team team: result) {
-                //System.out.println("member =  = " + member.getUsername() + ", " + member.getTeam().getName());
                 System.out.println("team = " + team.getName() + ", members = " + team.getMembers().size());
                 for (Member member : team.getMembers()) {
                     System.out.println("  -> member = " + member);
